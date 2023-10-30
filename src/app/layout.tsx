@@ -1,8 +1,13 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
+import { Roboto } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+import NextAuthSessionProvider from '@/providers/nextAuthSessionProvider'
+
+import { getCssText } from '../styles'
+import { globalStyles } from '../styles/global'
+
+const roboto = Roboto({ style: ['normal'], weight: ['100', '300', '400', '700'], subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,9 +19,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  globalStyles()
+
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        {/* <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700&display=swap" rel="stylesheet" /> */}
+        <style id="stitches" dangerouslySetInnerHTML={{ __html: getCssText() }} />
+      </head>
+      <body className={roboto.className}>
+        <NextAuthSessionProvider>
+          {children}
+        </NextAuthSessionProvider>
+      </body>
     </html>
   )
 }
