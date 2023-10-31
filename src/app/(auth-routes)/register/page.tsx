@@ -3,67 +3,62 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import { Div, Form, Label } from "@/styles/pages/register";
-
-import { Link } from "@/styles/components/link";
-import { Input, InputGroup } from "@/styles/components/input";
-import { Spacing } from "@/styles/components/spacing";
-import { Button } from "@/styles/components/button";
-import { FormSection, ImageSection } from "@/styles/components/section";
-
 export default function Register() {
   const { push } = useRouter()
 
   return (
-    <Div>
-      <FormSection>
+    <div className="flex h-screen w-screen">
+      <div className="flex flex-1 items-center justify-center">
 
-        <Form>
-          <InputGroup>
-            <Label>
+        <form className="w-88 flex flex-col bg-white p-6 rounded-lg shadow-md">
+          <div className="flex flex-col items-center">
+            <label className="mb-2 self-start block">
               Name:
-            </Label>
-            <Input
+            </label>
+            <input
+              className="w-full p-2 rounded border border-gray-300 box-border"
               type="email"
               required
             />
-          </InputGroup>
+          </div>
 
-          <Spacing />
+          <br />
 
-          <InputGroup>
-            <Label>
+          <div className="flex flex-col items-center">
+            <label className="mb-2 self-start block">
               Email:
-            </Label>
-            <Input
+            </label>
+            <input
+              className="w-full p-2 rounded border border-gray-300 box-border"
               type="email"
               required
             />
-          </InputGroup>
+          </div>
 
-          <Spacing />
+          <br />
 
-          <InputGroup>
-            <Label>
+          <div className="flex flex-col items-center">
+            <label className="mb-2 self-start block">
               Password:
-            </Label>
-            <Input
+            </label>
+            <input
+              className="w-full p-2 rounded border border-gray-300 box-border"
               type="password"
               required
             />
-          </InputGroup>
+          </div>
 
-          <Link href="login" onClick={() => push("login")}>I already have an account</Link>
+          <a className="text-xs text-blue-500 mt-1" href="login" onClick={() => push("login")}>I already have an account</a>
 
-          <Button>
+          <button className="px-4 py-2 border-none rounded bg-blue-500 text-white cursor-pointer mt-6" >
             Login
-          </Button>
-        </Form>
-      </FormSection>
+          </button>
+        </form>
+      </div>
 
-      <ImageSection>
+      <div className="flex flex-1 items-center justify-center">
         <Image src="/undraw_sign_up_n6im.svg" alt="An SVG of an eye" width={650} height={650} />
-      </ImageSection>
-    </Div>
+      </div>
+    </div>
   );
 }
