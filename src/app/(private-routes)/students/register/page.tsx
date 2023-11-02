@@ -1,102 +1,198 @@
 "use client"
 
+import React from 'react';
+import { useForm, SubmitHandler, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+
+import { RegisterStudentSchema } from '@/lib/schemas';
+
+import { ButtonRoot, ButtonText } from '@/components/Button';
+import { InputControl, InputRoot } from '@/components/Input';
+import { PageHeader } from '@/components/PageHeader';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+
+type Input = z.infer<typeof RegisterStudentSchema>
 
 export default function RegisterStudent() {
-  const [birthDate, setBirthDate] = useState('');
-  const [age, setAge] = useState('');
+  const session: any = useSession()
   const { push } = useRouter()
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors }
+  } = useForm<Input>({ resolver: zodResolver(RegisterStudentSchema) })
 
-  const handleBirthDateChange = (event: any) => {
-    const birthDateValue = event.target.value;
-    setBirthDate(birthDateValue);
+  const onSubmit: SubmitHandler<Input> = async (data) => {
+    reset()
 
-    const today = new Date();
-    const birthDateObj = new Date(birthDateValue);
-    const ageValue = today.getFullYear() - birthDateObj.getFullYear();
-    setAge(ageValue as any);
-  };
+    await fetch('http://localhost:3002/api/student', {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...data, userId: session.data?.user?.id })
+    })
 
-  const handleSaveAndGoToStudents = async () => {
-    // Emule a requisição para a API para salvar o usuário
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    // Redirecionar o usuário para a página de students
-    push('/students');
-  };
+    push("/students")
+  }
 
-  const handleSaveAndGoToAssessments = async () => {
-    // Emule a requisição para a API para salvar o usuário
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    // Redirecionar o usuário para a página de assessments
-    push('/assessments');
-  };
+  const toNumber = (event: any, field: any) => {
+    const numericValue = parseFloat(event.target.value);
+    if (!isNaN(numericValue)) {
+      field.onChange(numericValue);
+    }
+  }
 
   return (
     <div className="px-6">
-      <h1
-        className="font-sans text-5xl font-bold antialiased text-amber-600 transition delay-150"
-      >
-        Registrando aluno
-      </h1>
+      <PageHeader title='Registrando Aluno' />
+
       <div className="h-full flex items-center justify-center p-6">
         <div className="bg-white p-8 rounded shadow-xl">
-          <form className="grid grid-cols-2 gap-4">
+          <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="firstName">Nome</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="firstName" type="text" placeholder="Nome" />
+                <label className="block mb-2 text-sm font-bold">Nome</label>
+                <InputRoot>
+                  <Controller
+                    name="name"
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type='text' placeholder='Nome' />}
+                  />
+                </InputRoot>
+                {errors.name?.message && (
+                  <p className='text-sm text-red-600'>{errors.name.message}</p>
+                )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="lastName">Sobrenome</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="lastName" type="text" placeholder="Sobrenome" />
+                <label className="block mb-2 text-sm font-bold">Sobrenome</label>
+                <InputRoot>
+                  <Controller
+                    name='surname'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="text" placeholder='Sobrenome' />}
+                  />
+                </InputRoot>
+                {errors.surname?.message && (
+                  <p className='text-sm text-red-600'>{errors.surname.message}</p>
+                )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="birthDate">Data de Nascimento</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="birthDate" type="date" value={birthDate} onChange={handleBirthDateChange} />
+                <label className="block mb-2 text-sm font-bold">Data de Nascimento</label>
+                <InputRoot>
+                  <Controller
+                    name='birthDate'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="date" />}
+                  />
+                </InputRoot>
+                {errors.birthDate?.message && (
+                  <p className='text-sm text-red-600'>{errors.birthDate.message}</p>
+                )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="age">Idade</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="age" type="text" value={age} readOnly />
+                <label className="block mb-2 text-sm font-bold">Peso</label>
+                <InputRoot>
+                  <Controller
+                    name='weight'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => (
+                      <InputControl
+                        {...field}
+                        type="text"
+                        placeholder='Peso'
+                        onChange={(event) => toNumber(event, field)}
+                      />
+                    )}
+                  />
+                </InputRoot>
+                {errors.weight?.message && (
+                  <p className='text-sm text-red-600'>{errors.weight.message}</p>
+                )}
               </div>
             </div>
 
             <div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="lastName">Peso</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="lastName" type="text" placeholder="Sobrenome" />
+                <label className="block mb-2 text-sm font-bold">Altura</label>
+                <InputRoot>
+                  <Controller
+                    name='height'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => (
+                      <InputControl
+                        {...field}
+                        type="text"
+                        placeholder='Altura'
+                        onChange={(event) => toNumber(event, field)}
+                      />
+                    )}
+                  />
+                </InputRoot>
+                {errors.height?.message && (
+                  <p className='text-sm text-red-600'>{errors.height.message}</p>
+                )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="lastName">Altura</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="lastName" type="text" placeholder="Sobrenome" />
+                <label className="block mb-2 text-sm font-bold">Cidade</label>
+                <InputRoot>
+                  <Controller
+                    name='city'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="text" placeholder='Cidade' />}
+                  />
+                </InputRoot>
+                {errors.city?.message && (
+                  <p className='text-sm text-red-600'>{errors.city.message}</p>
+                )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="lastName">Cidade</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="lastName" type="text" placeholder="Sobrenome" />
+                <label className="block mb-2 text-sm font-bold">Estado</label>
+                <InputRoot>
+                  <Controller
+                    name='state'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="text" placeholder='Estado' />}
+                  />
+                </InputRoot>
+                {errors.state?.message && (
+                  <p className='text-sm text-red-600'>{errors.state.message}</p>
+                )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold" htmlFor="lastName">Estado</label>
-                <input className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" id="lastName" type="text" placeholder="Sobrenome" />
+                <label className="block mb-2 text-sm font-bold">Sexo</label>
+                <InputRoot>
+                  <Controller
+                    name='gender'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="text" placeholder='Sexo' />}
+                  />
+                </InputRoot>
+                {errors.gender?.message && (
+                  <p className='text-sm text-red-600'>{errors.gender.message}</p>
+                )}
               </div>
             </div>
+
+            <div>
+              <ButtonRoot type='submit'>
+                <ButtonText>
+                  Registrar
+                </ButtonText>
+              </ButtonRoot>
+            </div>
           </form>
-          <div className="mt-4">
-            <button
-              className="px-4 py-2 mr-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-              onClick={handleSaveAndGoToStudents}
-            >
-              Registrar
-            </button>
-            <button
-              className="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700"
-              onClick={handleSaveAndGoToAssessments}
-            >
-              Registrar e iniciar avaliação
-            </button>
-          </div>
         </div>
       </div>
     </div>
-
   );
 }

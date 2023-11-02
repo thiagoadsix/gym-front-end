@@ -1,10 +1,11 @@
 "use client"
 
 import { Book, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import { Logo } from "./Logo";
 import { NavItem } from "./NavItem";
 import { Profile } from "./Profile";
-import { useRouter } from "next/navigation";
 
 export function Sidebar() {
   const { push } = useRouter()

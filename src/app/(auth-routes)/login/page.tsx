@@ -56,9 +56,9 @@ export default function Login() {
             />
           </div>
 
-          <a className="text-xs text-blue-500 mt-1" href="register" onClick={() => push("register")}>I do not have an account</a>
+          <a className="text-xs text-zinc-500 mt-1" href="register" onClick={() => push("register")}>I do not have an account</a>
 
-          <button className="px-4 py-2 border-none rounded bg-blue-500 text-white cursor-pointer mt-6" type="submit">
+          <button className="px-4 py-2 border-none rounded bg-zinc-500 text-white cursor-pointer mt-6" type="submit">
             Login
           </button>
         </form>
