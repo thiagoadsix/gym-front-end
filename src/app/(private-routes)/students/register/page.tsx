@@ -4,14 +4,15 @@ import React from 'react';
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
-import { RegisterStudentSchema } from '@/lib/schemas';
+import { GenderType, RegisterStudentSchema } from '@/lib/schemas';
 
 import { ButtonRoot, ButtonText } from '@/components/Button';
 import { InputControl, InputRoot } from '@/components/Input';
 import { PageHeader } from '@/components/PageHeader';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { SelectControl, SelectRoot } from '@/components/Select';
 
 type Input = z.infer<typeof RegisterStudentSchema>
 
@@ -168,21 +169,25 @@ export default function RegisterStudent() {
                 )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold">Sexo</label>
-                <InputRoot>
+                <label htmlFor="genders" className="block mb-2 text-sm font-bold">Sexo</label>
+                <SelectRoot>
                   <Controller
-                    name='gender'
+                    name="gender"
                     rules={{ required: true }}
                     control={control}
-                    render={({ field }) => <InputControl {...field} type="text" placeholder='Sexo' />}
+                    render={({ field }) => (
+                      <SelectControl {...field} id="genders">
+                        <option value={GenderType.FEMALE}>Feminino</option>
+                        <option value={GenderType.MALE}>Masculino</option>
+                      </SelectControl>
+                    )}
                   />
-                </InputRoot>
+                </SelectRoot>
                 {errors.gender?.message && (
                   <p className='text-sm text-red-600'>{errors.gender.message}</p>
                 )}
               </div>
             </div>
-
             <div>
               <ButtonRoot type='submit'>
                 <ButtonText>

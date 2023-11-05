@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en">
+    <html lang="en" className='antialiased'>
       <body className={roboto.className}>
         <NextAuthSessionProvider>
           {children}

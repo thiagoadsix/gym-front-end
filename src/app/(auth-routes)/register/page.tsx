@@ -1,63 +1,127 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+
+import { RegisterSchema } from '@/lib/schemas';
+
+import { InputControl, InputRoot } from "@/components/Input";
+import { ButtonRoot, ButtonText } from "@/components/Button";
+
+type Input = z.infer<typeof RegisterSchema>
 
 export default function Register() {
-  const { push } = useRouter()
+  const { replace } = useRouter()
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors }
+  } = useForm<Input>({ resolver: zodResolver(RegisterSchema) })
+
+  const onSubmit: SubmitHandler<Input> = async (data) => {
+    reset()
+
+    await fetch('http://localhost:3001/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    replace('/login')
+  }
 
   return (
-    <div className="flex h-screen w-screen">
-      <div className="flex flex-1 items-center justify-center">
-
-        <form className="w-88 flex flex-col bg-white p-6 rounded-lg shadow-md">
-          <div className="flex flex-col items-center">
-            <label className="mb-2 self-start block">
-              Name:
-            </label>
-            <input
-              className="w-full p-2 rounded border border-gray-300 box-border"
-              type="email"
-              required
-            />
+    <div className="min-h-screen bg-white flex">
+      <div className="hidden lg:block relative w-0 flex-1 bg-zinc-600" />
+      <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 x1:px-24">
+        <div className="mx-auto w-full max-w-sm lg:w-96">
+          <div>
+            <h2 className="mt-6 text-3x font-semibold text-zinc-900">Criando conta</h2>
+            <p className="mt-2 text-sm text-zinc-600 max-w">Já tem uma conta? <a href="/login" onClick={() => replace("/login")} className="font-bold text-zinc-900">Clique aqui!</a></p>
           </div>
 
-          <br />
-
-          <div className="flex flex-col items-center">
-            <label className="mb-2 self-start block">
-              Email:
-            </label>
-            <input
-              className="w-full p-2 rounded border border-gray-300 box-border"
-              type="email"
-              required
-            />
+          <div className="mt-6">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="mb-4">
+                <InputRoot>
+                  <Controller
+                    name='name'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="text" placeholder='Nome' />}
+                  />
+                </InputRoot>
+                {errors.name?.message && (
+                  <p className='text-sm text-red-600'>{errors.name.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <InputRoot>
+                  <Controller
+                    name='surname'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="text" placeholder='Sobrenome' />}
+                  />
+                </InputRoot>
+                {errors.surname?.message && (
+                  <p className='text-sm text-red-600'>{errors.surname.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <InputRoot>
+                  <Controller
+                    name='email'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="email" placeholder='Email' />}
+                  />
+                </InputRoot>
+                {errors.email?.message && (
+                  <p className='text-sm text-red-600'>{errors.email.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <InputRoot>
+                  <Controller
+                    name='password'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="password" placeholder='Senha' />}
+                  />
+                </InputRoot>
+                {errors.password?.message && (
+                  <p className='text-sm text-red-600'>{errors.password.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <InputRoot>
+                  <Controller
+                    name='passwordConfirm'
+                    rules={{ required: true }}
+                    control={control}
+                    render={({ field }) => <InputControl {...field} type="password" placeholder='Confirme sua senha' />}
+                  />
+                </InputRoot>
+                {errors.passwordConfirm?.message && (
+                  <p className='text-sm text-red-600'>{errors.passwordConfirm.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <ButtonRoot type="submit" className="w-full text-white bg-zinc-600 hover:bg-zinc-700 font-bold rounded px-3 py-2 text-center inline-flex items-center justify-center border-2 border-zinc-700">
+                  <ButtonText>
+                    Cadastrar
+                  </ButtonText>
+                </ButtonRoot>
+              </div>
+            </form>
           </div>
-
-          <br />
-
-          <div className="flex flex-col items-center">
-            <label className="mb-2 self-start block">
-              Password:
-            </label>
-            <input
-              className="w-full p-2 rounded border border-gray-300 box-border"
-              type="password"
-              required
-            />
-          </div>
-
-          <a className="text-xs text-zinc-500 mt-1" href="login" onClick={() => push("login")}>I already have an account</a>
-
-          <button className="px-4 py-2 border-none rounded bg-zinc-500 text-white cursor-pointer mt-6" >
-            Login
-          </button>
-        </form>
-      </div>
-
-      <div className="flex flex-1 items-center justify-center">
-        <Image src="/undraw_sign_up_n6im.svg" alt="An SVG of an eye" width={650} height={650} />
+        </div>
       </div>
     </div>
   );

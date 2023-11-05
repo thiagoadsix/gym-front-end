@@ -14,7 +14,6 @@ import { ButtonIcon, ButtonRoot, ButtonText } from "@/components/Button"
 export default function Students() {
   const { push } = useRouter()
   const session: any = useSession()
-
   const [studentsData, setStudentsData] = useState<any>([]);
 
 
@@ -36,13 +35,18 @@ export default function Students() {
     fetchStudents();
   }, [session]);
 
+  const genders: any = {
+    MALE: 'Masculino',
+    FEMALE: 'Feminino',
+  }
+
   const columnsHeader = ["Nome", "Data de Nascimento", "Idade", "Altura", "Sexo"];
   const transformedData = studentsData.map((student: any) => ({
     nome: `${student.name} ${student.surname}`,
     nascimento: student.birthDate,
     idade: student.age,
     altura: student.height,
-    sexo: student.gender,
+    sexo: genders[student.gender],
   }));
 
 
@@ -65,7 +69,7 @@ export default function Students() {
 
           <tbody className="divide-y divide-zinc-100">
             {transformedData.map((student: any, index: any) => (
-              <TableRow key={index} data={student} />
+              <TableRow key={index} data={student} onClick={() => { }} />
             ))}
           </tbody>
         </table>

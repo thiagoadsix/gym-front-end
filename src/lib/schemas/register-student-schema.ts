@@ -1,4 +1,9 @@
-import { z } from "zod";
+import { nativeEnum, z } from "zod";
+
+export enum GenderType {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+}
 
 export const RegisterStudentSchema = z.object({
   name: z.string({ required_error: "Name is required" }),
@@ -8,5 +13,5 @@ export const RegisterStudentSchema = z.object({
   birthDate: z.string({ required_error: "Birth Date is required" }),
   city: z.string({ required_error: "City is required" }),
   state: z.string({ required_error: "State is required" }),
-  gender: z.string({ required_error: "Gender is required" }),
+  gender: nativeEnum(GenderType, { required_error: "Gender is required" }),
 });
