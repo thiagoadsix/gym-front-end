@@ -5,26 +5,26 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
-import { RegisterSchema } from '@/lib/schemas';
+import { SignUpRequestSchema } from '@/lib/schemas';
 
 import { InputControl, InputRoot } from "@/components/Input";
 import { ButtonRoot, ButtonText } from "@/components/Button";
 
-type Input = z.infer<typeof RegisterSchema>
+type Input = z.infer<typeof SignUpRequestSchema>
 
-export default function Register() {
+export default function SignUp() {
   const { replace } = useRouter()
   const {
     handleSubmit,
     reset,
     control,
     formState: { errors }
-  } = useForm<Input>({ resolver: zodResolver(RegisterSchema) })
+  } = useForm<Input>({ resolver: zodResolver(SignUpRequestSchema) })
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     reset()
 
-    await fetch('http://localhost:3001/api/auth/register', {
+    await fetch('http://localhost:3001/api/auth/sign-up', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export default function Register() {
       body: JSON.stringify(data),
     });
 
-    replace('/login')
+    replace('/sign-in')
   }
 
   return (
@@ -42,7 +42,7 @@ export default function Register() {
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div>
             <h2 className="mt-6 text-3x font-semibold text-zinc-900">Criando conta</h2>
-            <p className="mt-2 text-sm text-zinc-600 max-w">Já tem uma conta? <a href="/login" onClick={() => replace("/login")} className="font-bold text-zinc-900">Clique aqui!</a></p>
+            <p className="mt-2 text-sm text-zinc-600 max-w">Já tem uma conta? <a href="/sign-in" onClick={() => replace("/sign-in")} className="font-bold text-zinc-900">Clique aqui!</a></p>
           </div>
 
           <div className="mt-6">

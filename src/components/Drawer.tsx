@@ -1,71 +1,47 @@
 "use client"
 
+import React from "react";
+
 interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  data: any;
+  className?: string;
+  children: React.ReactNode;
 }
 
-export function Drawer({ isOpen, onClose, data }: DrawerProps) {
+export function Drawer({ isOpen, onClose, className, children }: DrawerProps) {
   if (!isOpen) return null;
 
-  const genders: any = {
-    MALE: 'Masculino',
-    FEMALE: 'Feminino',
-  }
-
-  const assessmentsTypes: any = {
-    POLLOCK_3: 'Pollock de 3 dobras',
-  }
-
-  const translations: any = {
-    chest: "Peito",
-    thigh: "Coxa",
-    tricep: "Tríceps",
-    abdomen: "Abdômen",
-    suprailiac: "Supra-ilíaco",
-    bodyDensity: "Densidade Corporal",
-    sumOfSkinfolds: "Soma das Dobras Cutâneas",
-    bodyFatPercentage: "Percentual de Gordura Corporal"
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-hidden" aria-labelledby="drawer-title" role="dialog" aria-modal="true">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="fixed inset-y-0 right-0 max-w-full flex">
-          <div className="w-screen max-w-md">
+        {/* Backdrop */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity" onClick={handleBackdropClick} />
+        {/* Drawer container */}
+        <section className="fixed inset-y-0 right-0 max-w-full flex outline-none" aria-labelledby="drawer-heading">
+          {/* Drawer panel */}
+          <div className={`relative w-screen max-w-md transform transition ease-in-out duration-500 ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${className}`}>
             <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+              {/* Close button */}
               <div className="p-6">
-                <div className="mb-4">
-                  <button onClick={onClose} className="bg-zinc-600 hover:bg-zinc-900 text-zinc-50 text-lg font-semibold rounded-lg px-2 py-1.5">X</button>
-                </div>
-                <div className="mb-4">
-                  <h1 className="text-xl font-bold">Informações do avaliado:</h1>
-                  <p>Nome: {data.studentFullName}</p>
-                  <p>Idade: {data.studentAge}</p>
-                  <p>Altura: {data.studentHeight}</p>
-                  <p>Sexo: {genders[data.studentGender]}</p>
-                </div>
-                <div className="space-y-4">
-                  {data && data.assessments.map((assessment: any, index: number) => (
-                    <div key={assessment.assessmentId} className="border p-4 rounded-lg">
-                      <h3 className="font-bold">Avaliação {index + 1}</h3>
-                      <p>Tipo: {assessmentsTypes[assessment.assessmentType]}</p>
-                      <p>Data: {new Date(assessment.assessedAt).toLocaleDateString('pt-BR')}</p>
-                      <div className="mt-2">
-                        <h4 className="font-semibold">Dados da Avaliação:</h4>
-                        {Object.entries(assessment.assessmentData).map(([key, value]) => (
-                          <p key={key}>{translations[key] || key}: {value}</p>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <button onClick={onClose} className="bg-zinc-600 hover:bg-zinc-900 text-zinc-50 text-lg font-semibold rounded-lg px-2 py-1.5">
+                  X
+                </button>
+              </div>
+              {/* Content */}
+              <div className="flex-1 p-6">
+                {children}
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

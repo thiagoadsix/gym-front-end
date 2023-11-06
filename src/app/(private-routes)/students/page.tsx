@@ -13,14 +13,14 @@ import { ButtonIcon, ButtonRoot, ButtonText } from "@/components/Button"
 
 export default function Students() {
   const { push } = useRouter()
-  const session: any = useSession()
+  const session = useSession()
   const [studentsData, setStudentsData] = useState<any>([]);
 
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const userId = session.data.user.id;
+        const userId = session.data?.user.id;
         const response = await fetch(`http://localhost:3002/api/student/${userId}/user`);
         const result = await response.json();
 

@@ -6,21 +6,21 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
-import { SignInSchema } from '@/lib/schemas';
+import { SignInRequestSchema } from "@/lib/schemas";
 
 import { InputControl, InputRoot } from "@/components/Input";
 import { ButtonRoot, ButtonText } from "@/components/Button";
 
-type Input = z.infer<typeof SignInSchema>
+type Input = z.infer<typeof SignInRequestSchema>
 
-export default function Login() {
+export default function SignIn() {
   const { replace } = useRouter()
   const {
     handleSubmit,
     reset,
     control,
     formState: { errors }
-  } = useForm<Input>({ resolver: zodResolver(SignInSchema) })
+  } = useForm<Input>({ resolver: zodResolver(SignInRequestSchema) })
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     reset()
@@ -47,8 +47,8 @@ export default function Login() {
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 x1:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div>
-            <h2 className="mt-6 text-3x font-semibold text-zinc-900">Login</h2>
-            <p className="mt-2 text-sm text-zinc-600 max-w">Novo por aqui? <a href="/register" onClick={() => replace("/register")} className="font-bold text-zinc-900">Teste agora!</a></p>
+            <h2 className="mt-6 text-3x font-semibold text-zinc-900">Sign-in</h2>
+            <p className="mt-2 text-sm text-zinc-600 max-w">Novo por aqui? <a href="/sign-up" onClick={() => replace("/sign-up")} className="font-bold text-zinc-900">Teste agora!</a></p>
           </div>
 
           <div className="mt-6">

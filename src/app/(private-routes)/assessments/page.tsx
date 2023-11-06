@@ -14,10 +14,10 @@ import { Drawer } from "@/components/Drawer"
 
 export default function Assessments() {
   const { push } = useRouter()
-  const session: any = useSession()
+  const session = useSession()
   const [assessmentData, setAssessmentData] = useState<any>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedAssessment, setSelectedAssessment] = useState(null);
+  const [selectedAssessment, setSelectedAssessment] = useState<any>(null);
 
   const columnsHeader = ["Nome", "Última Avaliação", "Avaliações"];
   const transformedData = assessmentData.map((assessment: any) => {
@@ -44,7 +44,7 @@ export default function Assessments() {
   useEffect(() => {
     const fetchAssessments = async () => {
       try {
-        const userId = session.data.user.id;
+        const userId = session.data?.user.id;
         const response = await fetch(`http://localhost:3003/api/assessments/${userId}/user`);
         const result = await response.json();
 
@@ -59,6 +59,27 @@ export default function Assessments() {
     fetchAssessments();
   }, [session]);
 
+  const genders: any = {
+    MALE: 'Masculino',
+    FEMALE: 'Feminino',
+  };
+
+  const assessmentTypes: any = {
+    POLLOCK_3: 'Pollock de 3 dobras',
+  };
+
+  const translations: any = {
+    chest: "Peito",
+    thigh: "Coxa",
+    triceps: "Tríceps",
+    abdomen: "Abdômen",
+    suprailiac: "Supra-ilíaco",
+    bodyDensity: "Densidade Corporal",
+    sumOfSkinfolds: "Soma das Dobras Cutâneas",
+    bodyFatPercentage: "Percentual de Gordura Corporal",
+    weight: "Peso",
+  };
+
   return (
     <div className="px-6">
       <PageHeader title='Avaliações' />
@@ -72,7 +93,7 @@ export default function Assessments() {
         </ButtonIcon>
       </ButtonRoot>
 
-      {/* Separar as tabelas por MESES! */}
+      {/* Trecho para separar as tabelas por Meses. */}
       <TableContainer>
         <table className="w-full">
           <TableHeader columns={columnsHeader} />
@@ -85,7 +106,30 @@ export default function Assessments() {
         </table>
       </TableContainer>
 
-      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} data={selectedAssessment} />
+      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} >
+        <div className="mb-4">
+          <h1 className="text-xl font-bold">Informações do avaliado:</h1>
+          <p>Nome: {selectedAssessment?.studentFullName}</p>
+          <p>Idade: {selectedAssessment?.studentAge}</p>
+          <p>Altura: {selectedAssessment?.studentHeight} cm</p>
+          <p>Sexo: {genders[selectedAssessment?.studentGender]}</p>
+        </div>
+        <div className="space-y-4">
+          {selectedAssessment && selectedAssessment?.assessments.map((assessment: any, index: number) => (
+            <div key={assessment.assessmentId} className="border p-4 rounded-lg">
+              <h3 className="font-bold">Avaliação {index + 1}</h3>
+              <p>Tipo: {assessmentTypes[assessment.assessmentType]}</p>
+              <p>Data: {new Date(assessment.assessedAt).toLocaleDateString('pt-BR')}</p>
+              <div className="mt-2">
+                <h4 className="font-semibold">Dados da Avaliação:</h4>
+                {Object.entries(assessment.assessmentData).map(([key, value]) => (
+                  <p key={key}>{translations[key] || key}: {value}</p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Drawer>
     </div>
   )
 }

@@ -1,6 +1,8 @@
-import { number, string, z } from "zod";
+import { nativeEnum, number, string, z } from "zod";
 
-export const RegisterAssessmentSchema = z.object({
+import { AssessmentType } from "@/lib/enums";
+
+export const RegisterAssessmentRequestSchema = z.object({
   chest: number({ required_error: "Chest is required" }),
   abdomen: number({ required_error: "Abdomen is required" }),
   thigh: number({ required_error: "Thigh is required" }),
@@ -8,5 +10,7 @@ export const RegisterAssessmentSchema = z.object({
   suprailiac: number({ required_error: "Suprailiac is required" }),
   weight: number({ required_error: "Weight is required" }),
   studentId: string({ required_error: "Student ID is required" }),
-  assessmentType: string({ required_error: "Assessment Type is required" }),
+  assessmentType: nativeEnum(AssessmentType, {
+    required_error: "Assessment Type is required",
+  }),
 });

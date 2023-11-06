@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const RegisterSchema = z
+export const SignUpRequestSchema = z
   .object({
     name: z.string({ required_error: "Name is required" }),
     surname: z.string({ required_error: "Surname is required" }),

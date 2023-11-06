@@ -5,7 +5,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export function Profile() {
-  const session: any = useSession()
+  const session = useSession()
   const { push } = useRouter()
 
   const getInitials = (name: string, surname: string) => {
@@ -23,7 +23,7 @@ export function Profile() {
   const handleSubmit = async () => {
     await signOut({ redirect: false });
 
-    push("/login")
+    push("/sign-in")
   }
 
   return (

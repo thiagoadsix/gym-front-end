@@ -7,24 +7,25 @@ import { z } from "zod"
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-import { GenderType, RegisterStudentSchema } from '@/lib/schemas';
+import { RegisterStudentRequestSchema } from '@/lib/schemas';
+import { GenderType } from '@/lib/enums';
 
 import { ButtonRoot, ButtonText } from '@/components/Button';
 import { InputControl, InputRoot } from '@/components/Input';
 import { PageHeader } from '@/components/PageHeader';
 import { SelectControl, SelectRoot } from '@/components/Select';
 
-type Input = z.infer<typeof RegisterStudentSchema>
+type Input = z.infer<typeof RegisterStudentRequestSchema>
 
 export default function RegisterStudent() {
-  const session: any = useSession()
+  const session = useSession()
   const { push } = useRouter()
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors }
-  } = useForm<Input>({ resolver: zodResolver(RegisterStudentSchema) })
+  } = useForm<Input>({ resolver: zodResolver(RegisterStudentRequestSchema) })
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     reset()
@@ -32,7 +33,7 @@ export default function RegisterStudent() {
     await fetch('http://localhost:3002/api/student', {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...data, userId: session.data?.user?.id })
+      body: JSON.stringify({ ...data, userId: session.data?.user.id })
     })
 
     push("/students")
@@ -96,24 +97,22 @@ export default function RegisterStudent() {
                 )}
               </div>
               <div className="mb-4">
-                <label className="block mb-2 text-sm font-bold">Peso</label>
-                <InputRoot>
+                <label htmlFor="genders" className="block mb-2 text-sm font-bold">Sexo</label>
+                <SelectRoot>
                   <Controller
-                    name='weight'
+                    name="gender"
                     rules={{ required: true }}
                     control={control}
                     render={({ field }) => (
-                      <InputControl
-                        {...field}
-                        type="text"
-                        placeholder='Peso'
-                        onChange={(event) => toNumber(event, field)}
-                      />
+                      <SelectControl {...field} id="genders">
+                        <option value={GenderType.FEMALE}>Feminino</option>
+                        <option value={GenderType.MALE}>Masculino</option>
+                      </SelectControl>
                     )}
                   />
-                </InputRoot>
-                {errors.weight?.message && (
-                  <p className='text-sm text-red-600'>{errors.weight.message}</p>
+                </SelectRoot>
+                {errors.gender?.message && (
+                  <p className='text-sm text-red-600'>{errors.gender.message}</p>
                 )}
               </div>
             </div>
@@ -166,25 +165,6 @@ export default function RegisterStudent() {
                 </InputRoot>
                 {errors.state?.message && (
                   <p className='text-sm text-red-600'>{errors.state.message}</p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label htmlFor="genders" className="block mb-2 text-sm font-bold">Sexo</label>
-                <SelectRoot>
-                  <Controller
-                    name="gender"
-                    rules={{ required: true }}
-                    control={control}
-                    render={({ field }) => (
-                      <SelectControl {...field} id="genders">
-                        <option value={GenderType.FEMALE}>Feminino</option>
-                        <option value={GenderType.MALE}>Masculino</option>
-                      </SelectControl>
-                    )}
-                  />
-                </SelectRoot>
-                {errors.gender?.message && (
-                  <p className='text-sm text-red-600'>{errors.gender.message}</p>
                 )}
               </div>
             </div>

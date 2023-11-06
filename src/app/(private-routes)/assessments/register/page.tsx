@@ -7,7 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { RegisterAssessmentSchema } from "@/lib/schemas";
+import { RegisterAssessmentRequestSchema } from "@/lib/schemas";
+import { AssessmentType, GenderType } from "@/lib/enums";
 
 import { ButtonRoot, ButtonText } from "@/components/Button";
 import { InputControl, InputRoot } from "@/components/Input";
@@ -16,9 +17,31 @@ import { Step, Stepper } from "@/components/Stepper";
 import { SelectControl, SelectRoot } from "@/components/Select";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-type Input = z.infer<typeof RegisterAssessmentSchema>
+type Input = z.infer<typeof RegisterAssessmentRequestSchema>
 
-const assessments = [{ assessment: "Pollock de 3 dobras", slug: 'POLLOCK_3' }, { assessment: "Pollock de 7 dobras", slug: "POLLOCK_7" }, { assessment: "Bioimpedância", slug: 'BIOIMPEDANCE' }]
+interface ApiBaseResponseSchema<T> {
+  status: string;
+  data: T
+}
+
+interface StudentsResponseSchema {
+  id: string,
+  userId: string,
+  name: string,
+  surname: string,
+  birthDate: string,
+  age: number,
+  gender: GenderType,
+  weight: number,
+  height: number,
+  city: string,
+  state: string,
+  createdAt: string,
+  updatedAt: string,
+  deletedAt?: string,
+}
+
+const assessments = [{ assessment: "Pollock de 3 dobras", slug: AssessmentType.POLLOCK_3 }, { assessment: "Pollock de 7 dobras", slug: AssessmentType.POLLOCK_7 }, { assessment: "Bioimpedância", slug: AssessmentType.BIOIMPEDANCE }]
 
 export default function RegisterAssessment() {
   const { push } = useRouter()
@@ -29,34 +52,22 @@ export default function RegisterAssessment() {
     formState: { errors, touchedFields },
     setValue,
     getValues
-  } = useForm<Input>({ resolver: zodResolver(RegisterAssessmentSchema), mode: 'onSubmit' })
-  const session: any = useSession()
-  const [activeForm, setActiveForm] = useState('POLLOCK_3');
-  const [currentStep, setCurrentStep] = useState(0);
-  const [allStudents, setAllStudents] = useState([]) as any;
+  } = useForm<Input>({ resolver: zodResolver(RegisterAssessmentRequestSchema), mode: 'onSubmit' })
+  const session = useSession()
+  const [activeForm, setActiveForm] = useState<AssessmentType>(AssessmentType.POLLOCK_3);
+  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [allStudents, setAllStudents] = useState<Array<StudentsResponseSchema>>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
   const nextStep = () => setCurrentStep((prev) => prev + 1);
   const prevStep = () => setCurrentStep((prev) => prev - 1);
 
-  const handleStudentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = event.target.value;
-    setSelectedStudentId(selectedId);
-    setValue('studentId', selectedId);
-  };
-
-  const handleAssessmentTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedType = event.target.value;
-    setActiveForm(selectedType);
-    setValue('assessmentType', selectedType);
-  };
-
   useEffect(() => {
     const getAllStudentsById = async () => {
       try {
-        const userId = session.data.user.id;
+        const userId = session.data?.user.id;
         const response = await fetch(`http://localhost:3002/api/student/${userId}/user`);
-        const result = await response.json();
+        const result: ApiBaseResponseSchema<{ students: Array<StudentsResponseSchema> }> = await response.json();
 
         if (result.status === "success") {
           setAllStudents(result.data.students);
@@ -84,7 +95,7 @@ export default function RegisterAssessment() {
   const createAssessmentOnSubmit: SubmitHandler<Input> = async (data) => {
     reset()
 
-    await fetch('http://localhost:3003/api/assessments/pollock-three', {
+    await fetch('http://localhost:3003/api/assessments', {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -92,6 +103,18 @@ export default function RegisterAssessment() {
 
     push("/assessments")
   }
+
+  const handleStudentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = event.target.value;
+    setSelectedStudentId(selectedId);
+    setValue('studentId', selectedId);
+  };
+
+  const handleAssessmentTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedType: AssessmentType = event.target.value as AssessmentType;
+    setActiveForm(selectedType);
+    setValue('assessmentType', selectedType);
+  };
 
   const Pollock3Form = () => (
     <>
@@ -251,7 +274,7 @@ export default function RegisterAssessment() {
   )
 
   const renderStudentOptions = () => {
-    return allStudents?.map((student: any) => (
+    return allStudents?.map((student) => (
       <option key={student.id} value={student.id}>
         {student.name} {student.surname}
       </option>
@@ -268,11 +291,11 @@ export default function RegisterAssessment() {
 
   const renderForm = () => {
     switch (activeForm) {
-      case 'POLLOCK_3':
+      case AssessmentType.POLLOCK_3:
         return <Pollock3Form />;
-      case 'POLLOCK_7':
+      case AssessmentType.POLLOCK_7:
         return <Pollock7Form />;
-      case 'BIOIMPEDANCE':
+      case AssessmentType.BIOIMPEDANCE:
         return <BioimpedanceForm />;
       default:
         return null;
@@ -280,22 +303,22 @@ export default function RegisterAssessment() {
   };
 
   const renderReview = () => {
-    const student = allStudents.find((student: any) => student.id === selectedStudentId)
+    const student = allStudents.find((student) => student.id === selectedStudentId)
 
     if (!student) {
       return <option>Carregando informações do aluno...</option>;
     }
 
-    const assessmentsTypes: any = {
-      POLLOCK_3: "Pollock de 3 dobras",
-      POLLOCK_7: "Pollock de 7 dobras",
-      BIOIMPEDANCE: "Bioimpedância"
-    }
-
     const formValues = getValues();
 
+    const assessmentTypeMap = {
+      [AssessmentType.POLLOCK_3]: "Pollock de 3 dobras",
+      [AssessmentType.POLLOCK_7]: "Pollock de 7 dobras",
+      [AssessmentType.BIOIMPEDANCE]: "Bioimpedância"
+    }
+
     const assessments = {
-      assessmentType: assessmentsTypes[formValues.assessmentType],
+      assessmentType: assessmentTypeMap[formValues.assessmentType],
       abdomen: formValues.abdomen,
       chest: formValues.chest,
       suprailiac: formValues.suprailiac,
@@ -346,7 +369,6 @@ export default function RegisterAssessment() {
                   control={control}
                   render={({ field }) => (
                     <SelectControl {...field} onChange={handleStudentChange}>
-                      <option value="" >Aluno</option>
                       {renderStudentOptions()}
                     </SelectControl>
                   )}
@@ -360,7 +382,6 @@ export default function RegisterAssessment() {
                   control={control}
                   render={({ field }) => (
                     <SelectControl {...field} onChange={handleAssessmentTypeChange}>
-                      <option value="" disabled>Avaliação</option>
                       {renderAssessmentOptions()}
                     </SelectControl>
                   )}

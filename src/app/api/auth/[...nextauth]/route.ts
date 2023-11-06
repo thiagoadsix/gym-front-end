@@ -11,7 +11,7 @@ const nextAuthOptions: NextAuthOptions = {
       },
 
       async authorize(credentials, req) {
-        const response = await fetch("http://localhost:3001/api/auth/login", {
+        const response = await fetch("http://localhost:3001/api/auth/sign-in", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -31,7 +31,7 @@ const nextAuthOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/sign-in",
   },
   callbacks: {
     async jwt({ token, user }) {
