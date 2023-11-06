@@ -7,7 +7,7 @@ import { z } from "zod"
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-import { RegisterStudentRequestSchema } from '@/lib/schemas';
+import { RegisterStudentRequestSchema } from '@/lib/schemas/request';
 import { GenderType } from '@/lib/enums';
 
 import { ButtonRoot, ButtonText } from '@/components/Button';

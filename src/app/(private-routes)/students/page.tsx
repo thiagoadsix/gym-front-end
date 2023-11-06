@@ -5,6 +5,9 @@ import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 
+import { GenderType } from "@/lib/enums"
+import { ApiBaseResponseSchema, StudentsResponseSchema } from "@/lib/schemas/response"
+
 import { PageHeader } from "@/components/PageHeader"
 import { TableContainer } from "@/components/Table/TableContainer"
 import { TableHeader } from "@/components/Table/TableHeader"
@@ -14,15 +17,14 @@ import { ButtonIcon, ButtonRoot, ButtonText } from "@/components/Button"
 export default function Students() {
   const { push } = useRouter()
   const session = useSession()
-  const [studentsData, setStudentsData] = useState<any>([]);
-
+  const [studentsData, setStudentsData] = useState<Array<StudentsResponseSchema>>([]);
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const userId = session.data?.user.id;
         const response = await fetch(`http://localhost:3002/api/student/${userId}/user`);
-        const result = await response.json();
+        const result: ApiBaseResponseSchema<{ students: Array<StudentsResponseSchema> }> = await response.json();
 
         if (result.status === "success") {
           setStudentsData(result.data.students);
@@ -35,18 +37,18 @@ export default function Students() {
     fetchStudents();
   }, [session]);
 
-  const genders: any = {
-    MALE: 'Masculino',
-    FEMALE: 'Feminino',
+  const gendersMap: any = {
+    [GenderType.MALE]: 'Masculino',
+    [GenderType.FEMALE]: 'Feminino',
   }
 
   const columnsHeader = ["Nome", "Data de Nascimento", "Idade", "Altura", "Sexo"];
-  const transformedData = studentsData.map((student: any) => ({
+  const transformedData = studentsData.map((student) => ({
     nome: `${student.name} ${student.surname}`,
     nascimento: student.birthDate,
     idade: student.age,
     altura: student.height,
-    sexo: genders[student.gender],
+    sexo: gendersMap[student.gender],
   }));
 
 

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
-import { SignUpRequestSchema } from '@/lib/schemas';
+import { SignUpRequestSchema } from '@/lib/schemas/request';
 
 import { InputControl, InputRoot } from "@/components/Input";
 import { ButtonRoot, ButtonText } from "@/components/Button";

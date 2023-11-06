@@ -7,8 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { RegisterAssessmentRequestSchema } from "@/lib/schemas";
-import { AssessmentType, GenderType } from "@/lib/enums";
+import { AssessmentType } from "@/lib/enums";
+import { RegisterAssessmentRequestSchema } from "@/lib/schemas/request";
+import { ApiBaseResponseSchema, StudentsResponseSchema } from "@/lib/schemas/response";
 
 import { ButtonRoot, ButtonText } from "@/components/Button";
 import { InputControl, InputRoot } from "@/components/Input";
@@ -18,28 +19,6 @@ import { SelectControl, SelectRoot } from "@/components/Select";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 type Input = z.infer<typeof RegisterAssessmentRequestSchema>
-
-interface ApiBaseResponseSchema<T> {
-  status: string;
-  data: T
-}
-
-interface StudentsResponseSchema {
-  id: string,
-  userId: string,
-  name: string,
-  surname: string,
-  birthDate: string,
-  age: number,
-  gender: GenderType,
-  weight: number,
-  height: number,
-  city: string,
-  state: string,
-  createdAt: string,
-  updatedAt: string,
-  deletedAt?: string,
-}
 
 const assessments = [{ assessment: "Pollock de 3 dobras", slug: AssessmentType.POLLOCK_3 }, { assessment: "Pollock de 7 dobras", slug: AssessmentType.POLLOCK_7 }, { assessment: "Bioimpedância", slug: AssessmentType.BIOIMPEDANCE }]
 
