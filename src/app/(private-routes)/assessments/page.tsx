@@ -11,6 +11,7 @@ import { TableContainer } from "@/components/Table/TableContainer"
 import { TableHeader } from "@/components/Table/TableHeader"
 import { TableRow } from "@/components/Table/TableRow"
 import { Drawer } from "@/components/Drawer"
+import { GenderType, Status } from "@/lib/enums"
 
 export default function Assessments() {
   const { push } = useRouter()
@@ -19,18 +20,21 @@ export default function Assessments() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState<any>(null);
 
-  const columnsHeader = ["Nome", "Última Avaliação", "Avaliações"];
+  const columnsHeader = [
+    "Nome",
+    // "Última Avaliação",
+    "Avaliações"];
   const transformedData = assessmentData.map((assessment: any) => {
-    const lastAssessmentDate = assessment.assessments.reduce((latestDate: any, current: any) => {
-      const currentDate = new Date(current.assessedAt);
-      return (latestDate > currentDate) ? latestDate : currentDate;
-    }, new Date(0));
+    // const lastAssessmentDate = assessment.assessments.reduce((latestDate: any, current: any) => {
+    //   const currentDate = new Date(current.assessedAt);
+    //   return (latestDate > currentDate) ? latestDate : currentDate;
+    // }, new Date(0));
 
-    const formattedDate = lastAssessmentDate.toLocaleDateString('pt-BR');
+    // const formattedDate = lastAssessmentDate.toLocaleDateString('pt-BR');
 
     return {
       nome: assessment.studentFullName,
-      "Última Avaliação": formattedDate,
+      // "Última Avaliação": formattedDate,
       "avaliações": assessment.assessments.length,
 
     };
@@ -45,7 +49,7 @@ export default function Assessments() {
     const fetchAssessments = async () => {
       try {
         const userId = session.data?.user.id;
-        const response = await fetch(`http://localhost:3003/api/assessments/${userId}/user`);
+        const response = await fetch(`http://localhost:3003/api/assessments/students/${userId}/user`);
         const result = await response.json();
 
         if (result.status === "success") {
@@ -59,9 +63,14 @@ export default function Assessments() {
     fetchAssessments();
   }, [session]);
 
-  const genders: any = {
-    MALE: 'Masculino',
-    FEMALE: 'Feminino',
+  const gendersMap: any = {
+    [GenderType.MALE]: 'Masculino',
+    [GenderType.FEMALE]: 'Feminino',
+  };
+
+  const statusMap: any = {
+    [Status.IN_PROGRESS]: 'Em progresso',
+    [Status.COMPLETE]: 'Finalizado',
   };
 
   const assessmentTypes: any = {
@@ -112,14 +121,16 @@ export default function Assessments() {
           <p>Nome: {selectedAssessment?.studentFullName}</p>
           <p>Idade: {selectedAssessment?.studentAge}</p>
           <p>Altura: {selectedAssessment?.studentHeight} cm</p>
-          <p>Sexo: {genders[selectedAssessment?.studentGender]}</p>
+          <p>Sexo: {gendersMap[selectedAssessment?.studentGender]}</p>
         </div>
         <div className="space-y-4">
           {selectedAssessment && selectedAssessment?.assessments.map((assessment: any, index: number) => (
             <div key={assessment.assessmentId} className="border p-4 rounded-lg">
               <h3 className="font-bold">Avaliação {index + 1}</h3>
               <p>Tipo: {assessmentTypes[assessment.assessmentType]}</p>
-              <p>Data: {new Date(assessment.assessedAt).toLocaleDateString('pt-BR')}</p>
+              <p>Data início: {new Date(assessment.startDate).toLocaleDateString('pt-BR')}</p>
+              <p>Data fim: {new Date(assessment.endDate).toLocaleDateString('pt-BR')}</p>
+              <p>Status: {statusMap[assessment.status]}</p>
               <div className="mt-2">
                 <h4 className="font-semibold">Dados da Avaliação:</h4>
                 {Object.entries(assessment.assessmentData).map(([key, value]) => (

@@ -17,6 +17,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Step, Stepper } from "@/components/Stepper";
 import { SelectControl, SelectRoot } from "@/components/Select";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { FormInput } from "@/components/Form";
 
 type Input = z.infer<typeof RegisterAssessmentRequestSchema>
 
@@ -77,7 +78,7 @@ export default function RegisterAssessment() {
     await fetch('http://localhost:3003/api/assessments', {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ ...data, userId: session.data?.user.id })
     })
 
     push("/assessments")
@@ -304,6 +305,8 @@ export default function RegisterAssessment() {
       thigh: formValues.thigh,
       triceps: formValues.triceps,
       weight: formValues.weight,
+      startDate: formValues.startDate,
+      endDate: formValues.endDate,
     };
 
     return (
@@ -312,7 +315,6 @@ export default function RegisterAssessment() {
           <h2 className="text-lg font-semibold">Informações do Aluno</h2>
           <p><strong>Nome:</strong> {student?.name} {student?.surname}</p>
           <p><strong>Idade:</strong> {student?.age}</p>
-          <p><strong>Peso:</strong> {student?.weight} kg</p>
           <p><strong>Altura:</strong> {student?.height} m</p>
           <p><strong>Gênero:</strong> {student?.gender === 'MALE' ? 'Masculino' : 'Feminino'}</p>
           <p><strong>Cidade:</strong> {student?.city}</p>
@@ -329,6 +331,8 @@ export default function RegisterAssessment() {
           <p><strong>Coxa:</strong> {assessments.thigh} mm</p>
           <p><strong>Tríceps:</strong> {assessments.triceps} mm</p>
           <p><strong>Peso:</strong> {assessments.weight} kg</p>
+          <p><strong>Data de início:</strong> {assessments.startDate}</p>
+          <p><strong>Data de fim:</strong> {assessments.endDate}</p>
         </div>
       </div>
     );
@@ -370,6 +374,24 @@ export default function RegisterAssessment() {
             <Step title="Inserir Informações">
               {renderForm()}
             </Step>
+            <Step title="Data de início e fim">
+              <div className="space-y-4">
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => (
+                    <FormInput {...field} name="startDate" control={control} type="text" placeholder="Ex.: 10/11/2023" rules={{ required: true }} />
+                  )}
+                />
+                <Controller
+                  name="endDate"
+                  control={control}
+                  render={({ field }) => (
+                    <FormInput {...field} name="endDate" control={control} type="text" placeholder="Ex.: 10/12/2023" rules={{ required: true }} />
+                  )}
+                />
+              </div>
+            </Step>
             <Step title="Revisão e Confirmação">
               {renderReview()}
             </Step>
@@ -386,7 +408,7 @@ export default function RegisterAssessment() {
             ) : (
               <div></div>
             )}
-            {currentStep < 3 ? (
+            {currentStep < 4 ? (
               <ButtonRoot onClick={nextStep} type="submit">
                 <ChevronRightIcon />
                 <ButtonText>
@@ -398,7 +420,7 @@ export default function RegisterAssessment() {
             )}
           </div>
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <div className="mt-4 w-full">
               <ButtonRoot type="submit" className="w-full text-white bg-zinc-600 hover:bg-zinc-700 font-bold rounded px-3 py-2 text-center inline-flex items-center justify-center border-2 border-zinc-700">
                 <ButtonText>

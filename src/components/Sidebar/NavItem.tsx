@@ -1,3 +1,5 @@
+"use client";
+
 import { ComponentProps, ElementType } from "react";
 
 export interface NavItemProps extends ComponentProps<"a"> {

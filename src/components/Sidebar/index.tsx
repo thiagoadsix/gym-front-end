@@ -1,6 +1,6 @@
 "use client"
 
-import { Book, Users } from "lucide-react";
+import { Book, Dumbbell, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Logo } from "./Logo";
@@ -15,9 +15,9 @@ export function Sidebar() {
       <Logo />
 
       <nav className="space-y-0.5">
-        <NavItem icon={Users} title="Alunos" page="/students" />
+        <NavItem icon={Users} title="Alunos" onClick={() => push("/students")} page="/students" />
         <NavItem icon={Book} title="Avaliações" onClick={() => push("/assessments")} page="/assessments" />
-        {/* <NavItem icon={Apple} title="Treinos" /> */}
+        <NavItem icon={Dumbbell} title="Treinos" onClick={() => push("/workouts")} page="/workouts" />
       </nav>
 
       <div className="mt-auto flex flex-col gap-6">

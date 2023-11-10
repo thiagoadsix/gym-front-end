@@ -37,7 +37,7 @@ export default function Students() {
     fetchStudents();
   }, [session]);
 
-  const gendersMap: any = {
+  const gendersMap = {
     [GenderType.MALE]: 'Masculino',
     [GenderType.FEMALE]: 'Feminino',
   }
