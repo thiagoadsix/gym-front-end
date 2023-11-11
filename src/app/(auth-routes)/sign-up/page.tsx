@@ -9,6 +9,7 @@ import { SignUpRequestSchema } from '@/lib/schemas/request';
 
 import { InputControl, InputRoot } from "@/components/Input";
 import { ButtonRoot, ButtonText } from "@/components/Button";
+import { FormErrorMessage } from "@/components/FormErrorMessage";
 
 type Input = z.infer<typeof SignUpRequestSchema>
 
@@ -56,9 +57,7 @@ export default function SignUp() {
                     render={({ field }) => <InputControl {...field} type="text" placeholder='Nome' />}
                   />
                 </InputRoot>
-                {errors.name?.message && (
-                  <p className='text-sm text-red-600'>{errors.name.message}</p>
-                )}
+                <FormErrorMessage message={errors.name?.message} />
               </div>
               <div className="mb-4">
                 <InputRoot>
@@ -69,9 +68,7 @@ export default function SignUp() {
                     render={({ field }) => <InputControl {...field} type="text" placeholder='Sobrenome' />}
                   />
                 </InputRoot>
-                {errors.surname?.message && (
-                  <p className='text-sm text-red-600'>{errors.surname.message}</p>
-                )}
+                <FormErrorMessage message={errors.surname?.message} />
               </div>
               <div className="mb-4">
                 <InputRoot>
@@ -82,9 +79,7 @@ export default function SignUp() {
                     render={({ field }) => <InputControl {...field} type="email" placeholder='Email' />}
                   />
                 </InputRoot>
-                {errors.email?.message && (
-                  <p className='text-sm text-red-600'>{errors.email.message}</p>
-                )}
+                <FormErrorMessage message={errors.email?.message} />
               </div>
               <div className="mb-4">
                 <InputRoot>
@@ -95,9 +90,7 @@ export default function SignUp() {
                     render={({ field }) => <InputControl {...field} type="password" placeholder='Senha' />}
                   />
                 </InputRoot>
-                {errors.password?.message && (
-                  <p className='text-sm text-red-600'>{errors.password.message}</p>
-                )}
+                <FormErrorMessage message={errors.password?.message} />
               </div>
               <div className="mb-4">
                 <InputRoot>
@@ -108,9 +101,7 @@ export default function SignUp() {
                     render={({ field }) => <InputControl {...field} type="password" placeholder='Confirme sua senha' />}
                   />
                 </InputRoot>
-                {errors.passwordConfirm?.message && (
-                  <p className='text-sm text-red-600'>{errors.passwordConfirm.message}</p>
-                )}
+                <FormErrorMessage message={errors.passwordConfirm?.message} />
               </div>
               <div className="mb-4">
                 <ButtonRoot type="submit" className="w-full text-white bg-zinc-600 hover:bg-zinc-700 font-bold rounded px-3 py-2 text-center inline-flex items-center justify-center border-2 border-zinc-700">

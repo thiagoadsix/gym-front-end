@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import { SignInRequestSchema } from "@/lib/schemas/request";
 
 import { ButtonRoot, ButtonText } from "@/components/Button";
-import { FormInput } from "@/components/Form";
+import { InputControl, InputRoot } from "@/components/Input";
+import { FormErrorMessage } from "@/components/FormErrorMessage";
 
 type Input = z.infer<typeof SignInRequestSchema>
 
@@ -20,7 +21,12 @@ export default function SignIn() {
     reset,
     control,
     formState: { errors }
-  } = useForm<Input>({ resolver: zodResolver(SignInRequestSchema) })
+  } = useForm<Input>({
+    defaultValues: {
+      email: '',
+      password: '',
+    }, resolver: zodResolver(SignInRequestSchema)
+  })
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     reset()
@@ -53,8 +59,24 @@ export default function SignIn() {
 
           <div className="mt-6">
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-              <FormInput name="email" control={control} type="email" placeholder="Email" rules={{ required: true }} />
-              <FormInput name="password" control={control} type="password" placeholder="Senha" rules={{ required: true }} />
+              <InputRoot>
+                <Controller
+                  name='email'
+                  rules={{ required: true }}
+                  control={control}
+                  render={({ field }) => <InputControl {...field} type="email" placeholder='Seu e-mail' />}
+                />
+              </InputRoot>
+              <FormErrorMessage message={errors.email?.message} />
+              <InputRoot>
+                <Controller
+                  name='password'
+                  rules={{ required: true }}
+                  control={control}
+                  render={({ field }) => <InputControl {...field} type="password" placeholder='Sua senha' />}
+                />
+              </InputRoot>
+              <FormErrorMessage message={errors.password?.message} />
 
               <ButtonRoot type="submit" className="w-full text-white bg-zinc-600 hover:bg-zinc-700 font-bold rounded px-3 py-2 text-center inline-flex items-center justify-center border-2 border-zinc-700">
                 <ButtonText>

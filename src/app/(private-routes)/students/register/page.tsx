@@ -14,6 +14,7 @@ import { ButtonRoot, ButtonText } from '@/components/Button';
 import { InputControl, InputRoot } from '@/components/Input';
 import { PageHeader } from '@/components/PageHeader';
 import { SelectControl, SelectRoot } from '@/components/Select';
+import { FormErrorMessage } from '@/components/FormErrorMessage';
 
 type Input = z.infer<typeof RegisterStudentRequestSchema>
 
@@ -25,7 +26,9 @@ export default function RegisterStudent() {
     control,
     reset,
     formState: { errors }
-  } = useForm<Input>({ resolver: zodResolver(RegisterStudentRequestSchema) })
+  } = useForm<Input>({
+    resolver: zodResolver(RegisterStudentRequestSchema)
+  })
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     reset()
@@ -64,9 +67,7 @@ export default function RegisterStudent() {
                     render={({ field }) => <InputControl {...field} type='text' placeholder='Nome' />}
                   />
                 </InputRoot>
-                {errors.name?.message && (
-                  <p className='text-sm text-red-600'>{errors.name.message}</p>
-                )}
+                <FormErrorMessage message={errors.name?.message} />
               </div>
               <div className="mb-4">
                 <label className="block mb-2 text-sm font-bold">Sobrenome</label>
@@ -78,9 +79,7 @@ export default function RegisterStudent() {
                     render={({ field }) => <InputControl {...field} type="text" placeholder='Sobrenome' />}
                   />
                 </InputRoot>
-                {errors.surname?.message && (
-                  <p className='text-sm text-red-600'>{errors.surname.message}</p>
-                )}
+                <FormErrorMessage message={errors.surname?.message} />
               </div>
               <div className="mb-4">
                 <label className="block mb-2 text-sm font-bold">Data de Nascimento</label>
@@ -92,9 +91,7 @@ export default function RegisterStudent() {
                     render={({ field }) => <InputControl {...field} type="date" />}
                   />
                 </InputRoot>
-                {errors.birthDate?.message && (
-                  <p className='text-sm text-red-600'>{errors.birthDate.message}</p>
-                )}
+                <FormErrorMessage message={errors.birthDate?.message} />
               </div>
               <div className="mb-4">
                 <label htmlFor="genders" className="block mb-2 text-sm font-bold">Sexo</label>
@@ -111,9 +108,7 @@ export default function RegisterStudent() {
                     )}
                   />
                 </SelectRoot>
-                {errors.gender?.message && (
-                  <p className='text-sm text-red-600'>{errors.gender.message}</p>
-                )}
+                <FormErrorMessage message={errors.gender?.message} />
               </div>
             </div>
 
@@ -135,9 +130,7 @@ export default function RegisterStudent() {
                     )}
                   />
                 </InputRoot>
-                {errors.height?.message && (
-                  <p className='text-sm text-red-600'>{errors.height.message}</p>
-                )}
+                <FormErrorMessage message={errors.height?.message} />
               </div>
               <div className="mb-4">
                 <label className="block mb-2 text-sm font-bold">Cidade</label>
@@ -149,9 +142,7 @@ export default function RegisterStudent() {
                     render={({ field }) => <InputControl {...field} type="text" placeholder='Cidade' />}
                   />
                 </InputRoot>
-                {errors.city?.message && (
-                  <p className='text-sm text-red-600'>{errors.city.message}</p>
-                )}
+                <FormErrorMessage message={errors.city?.message} />
               </div>
               <div className="mb-4">
                 <label className="block mb-2 text-sm font-bold">Estado</label>
@@ -163,9 +154,7 @@ export default function RegisterStudent() {
                     render={({ field }) => <InputControl {...field} type="text" placeholder='Estado' />}
                   />
                 </InputRoot>
-                {errors.state?.message && (
-                  <p className='text-sm text-red-600'>{errors.state.message}</p>
-                )}
+                <FormErrorMessage message={errors.state?.message} />
               </div>
             </div>
             <div>

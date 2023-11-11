@@ -11,6 +11,7 @@ import { TableContainer } from "@/components/Table/TableContainer"
 import { TableHeader } from "@/components/Table/TableHeader"
 import { TableRow } from "@/components/Table/TableRow"
 import { Drawer } from "@/components/Drawer"
+
 import { GenderType, Status } from "@/lib/enums"
 
 export default function Assessments() {
@@ -46,9 +47,8 @@ export default function Assessments() {
   };
 
   useEffect(() => {
-    const fetchAssessments = async () => {
+    const fetchAssessments = async (userId: string) => {
       try {
-        const userId = session.data?.user.id;
         const response = await fetch(`http://localhost:3003/api/assessments/students/${userId}/user`);
         const result = await response.json();
 
@@ -60,8 +60,11 @@ export default function Assessments() {
       }
     };
 
-    fetchAssessments();
-  }, [session]);
+    if (session.data?.user.id) {
+      fetchAssessments(session.data.user.id);
+    }
+
+  }, [session.data]);
 
   const gendersMap: any = {
     [GenderType.MALE]: 'Masculino',

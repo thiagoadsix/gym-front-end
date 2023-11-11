@@ -20,9 +20,8 @@ export default function Students() {
   const [studentsData, setStudentsData] = useState<Array<StudentsResponseSchema>>([]);
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchStudents = async (userId: string) => {
       try {
-        const userId = session.data?.user.id;
         const response = await fetch(`http://localhost:3002/api/student/${userId}/user`);
         const result: ApiBaseResponseSchema<{ students: Array<StudentsResponseSchema> }> = await response.json();
 
@@ -34,8 +33,10 @@ export default function Students() {
       }
     };
 
-    fetchStudents();
-  }, [session]);
+    if (session.data?.user?.id) {
+      fetchStudents(session.data.user.id);
+    }
+  }, [session.data]);
 
   const gendersMap = {
     [GenderType.MALE]: 'Masculino',

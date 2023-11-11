@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 import { AssessmentType } from "@/lib/enums";
 import { RegisterAssessmentRequestSchema } from "@/lib/schemas/request";
@@ -16,7 +17,6 @@ import { InputControl, InputRoot } from "@/components/Input";
 import { PageHeader } from "@/components/PageHeader";
 import { Step, Stepper } from "@/components/Stepper";
 import { SelectControl, SelectRoot } from "@/components/Select";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { FormInput } from "@/components/Form";
 
 type Input = z.infer<typeof RegisterAssessmentRequestSchema>

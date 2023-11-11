@@ -1,6 +1,6 @@
 "use client"
 
-import { ComponentProps } from "react"
+import { ComponentProps, forwardRef } from "react"
 
 type SelectRootProps = ComponentProps<'div'>;
 
@@ -15,11 +15,14 @@ export function SelectRoot(props: SelectRootProps) {
 
 type SelectControlProps = ComponentProps<'select'>;
 
-export function SelectControl(props: SelectControlProps) {
+export const SelectControl = forwardRef<HTMLSelectElement, SelectControlProps>((props, ref) => {
   return (
     <select
       className="flex-1 border-0 p-0 text-zinc-700 bg-zinc-50 focus:outline-none focus:shadow-outline"
+      ref={ref}
       {...props}
     />
   );
-}
+});
+
+SelectControl.displayName = 'SelectControl';

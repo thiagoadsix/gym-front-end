@@ -24,9 +24,8 @@ export default function Workouts() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchStudents = async (userId: string) => {
       try {
-        const userId = session.data?.user.id;
         const response = await fetch(`http://localhost:3002/api/student/${userId}/user`);
         const result: ApiBaseResponseSchema<{ students: Array<StudentsResponseSchema> }> = await response.json();
 
@@ -38,13 +37,15 @@ export default function Workouts() {
       }
     };
 
-    fetchStudents();
-  }, [session]);
+    if (session.data?.user.id) {
+      fetchStudents(session.data.user.id);
+    }
+
+  }, [session.data]);
 
   useEffect(() => {
-    const fetchWorkouts = async () => {
+    const fetchWorkouts = async (ids: string) => {
       try {
-        const ids = students.map(student => student.id).join(",")
         const response = await fetch(`http://localhost:3004/api/workout-manager/${ids}/student`);
         const result: ApiBaseResponseSchema<{ workouts: Array<StudentWorkoutResponseSchema> }> = await response.json();
 
@@ -56,7 +57,12 @@ export default function Workouts() {
       }
     }
 
-    fetchWorkouts()
+    const ids = students.map(student => student.id).join(",")
+
+    if (ids) {
+      fetchWorkouts(ids)
+    }
+
   }, [students])
 
   const columnsHeader = ["Nome", "Altura", "Idade", "Sexo", "Treino"];

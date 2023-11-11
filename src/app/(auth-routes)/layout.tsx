@@ -15,5 +15,11 @@ export default async function AuthLayout({ children }: PrivateLayoutProps) {
     redirect("/home");
   }
 
-  return <>{children}</>;
+  return (
+    <html>
+      <body>
+        {children}
+      </body>
+    </html>
+  );
 }
